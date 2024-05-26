@@ -109,6 +109,75 @@ class DriverService {
         return await axios.request(config);
     }
 
+    async getAccList() {
+        let sql = "SELECT tms_acc_name_id, tms_acc_name_code, tms_acc_name_name, tms_acc_name_active, tms_acc_name_billing, tms_acc_name_hotkey, tms_acc_name_customer FROM tms_acc_name WHERE fk_company_id = 23 AND tms_acc_name_active = 1 " +
+            "and tms_acc_name_billing = 1;";
+        console.log(sql);
+        sql = encodeURIComponent(sql);
+        const accList = await HttpRequest.get(sql, 0, 1000);
+        const bnpAccLists = await HttpRequest.getAccList();
+        const bnpAccList = bnpAccLists.data.Result;
+
+        let existsList = {};
+        let BNPAccMap = {};
+        let newAccList = [];
+        bnpAccList.forEach((item) => {
+            BNPAccMap[item.Code] = item;
+        });
+        accList.forEach((item) => {
+            if(BNPAccMap && BNPAccMap.hasOwnProperty(item.tms_acc_name_code)) {
+                existsList[item.tms_acc_name_code] = true;
+                newAccList.push(this.accList(BNPAccMap[item.tms_acc_name_code], item));
+            } else {
+                newAccList.push(this.accList({}, item));
+            }
+        });
+        console.log(existsList);
+        bnpAccList.forEach((item) => {
+            if(!(existsList && existsList.hasOwnProperty(item.Code))) {
+                newAccList.push(this.accList(item, {}));
+            }
+        });
+        return newAccList;
+    }
+
+    accList(bnpAcc, tmsAcc) {
+        return {
+            "Code": this.checkAccField('Code', bnpAcc),
+            "Description": this.checkAccField('Description', bnpAcc),
+            "IsActive": this.formatAcc(this.checkAccField('IsActive', bnpAcc)),
+            "IsBillingItem": this.formatAcc(this.checkAccField('IsBillingItem', bnpAcc)),
+            "IsPayItem": this.formatAcc(this.checkAccField('IsPayItem', bnpAcc)),
+            "IsHotkey": this.formatAcc(this.checkAccField('IsHotkey', bnpAcc)),
+            "IsCustomer": this.formatAcc(this.checkAccField('IsCustomer', bnpAcc)),
+            "tms_acc_name_id": this.checkAccField('tms_acc_name_id', tmsAcc),
+            "tms_acc_name_code": this.checkAccField('tms_acc_name_code', tmsAcc),
+            "tms_acc_name_name": this.checkAccField('tms_acc_name_name', tmsAcc),
+            "tms_acc_name_active": this.formatAcc(this.checkAccField('tms_acc_name_active', tmsAcc)),
+            "tms_acc_name_billing": this.formatAcc(this.checkAccField('tms_acc_name_billing', tmsAcc)),
+            "tms_acc_name_hotkey": this.formatAcc(this.checkAccField('tms_acc_name_hotkey', tmsAcc)),
+            "tms_acc_name_customer": this.formatAcc(this.checkAccField('tms_acc_name_customer', tmsAcc))
+        }
+    }
+
+    formatAcc(str) {
+        if(str === "" || str === "false" || str === 0 || str === "0" ||str === undefined || str === null) {
+            return "InActive";
+        } else {
+            return 'Active';
+        }
+    }
+
+    checkAccField(field, object) {
+        //判断是否存在该字段
+        if(object && object.hasOwnProperty(field)) {
+            return object[field];
+        } else {
+            return "";
+        }
+    }
+
+
 }
 
 module.exports = new DriverService();

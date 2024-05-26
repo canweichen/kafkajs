@@ -16,6 +16,8 @@ router.get('/api/compareInvoices', invoiceController.getCompareInvoices);
 router.get('/api/payment/detail', invoiceController.getCompareInvoicesDetail);
 
 router.get('/api/driver/list', driverController.getDriverList);
+router.get('/api/bnp/acc/list', driverController.getAccList);
+
 router.get('/api/userRequest/list', driverController.getUserRequestList);
 router.get('/api/userRpcLog/list', driverController.getTmsUserRpcLog);
 router.get('/api/recreateInvoice', driverController.recreateInvoice);

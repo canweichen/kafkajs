@@ -1,4 +1,4 @@
-
+const axios = require('axios');
 class HttpRequest
 {
     constructor() {}
@@ -50,6 +50,28 @@ class HttpRequest
             "method": "POST"
         });
         return await response.json();
+    }
+
+    async getAccList() {
+        let data = JSON.stringify({
+            "Data": {
+                "IsActive": "true",
+                "Customer": "all"
+            },
+            "UserID": 1073
+        });
+
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: 'http://bnp.unisco.com/PayAndBillAPI/api/RateEngine/GetAccessorialDirectory?Authorization=BasicAuth eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IlRNU0FkbWluIiwibmFtZWlkIjoiMTE2NyIsIm5iZiI6MTcxNjcyODExNSwiZXhwIjoxNzE2ODE0NTE1LCJpYXQiOjE3MTY3MjgxMTUsImlzcyI6ImJucCIsImF1ZCI6ImJucCJ9.nCO-v5g4a2_bhqaZvhup6VliyURAWhg8WeW7gZNPdKE',
+            headers: {
+                'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
+                'Content-Type': 'application/json'
+            },
+            data : data
+        };
+        return await axios.request(config)
     }
 }
 

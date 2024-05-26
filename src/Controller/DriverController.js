@@ -1,6 +1,7 @@
 const axios = require('axios');
 const driverService = require('../Services/DriverService');
 const crud = require('../Dao/crud');
+const ExcelJS = require("exceljs");
 
 class DriverController {
     constructor() {}
@@ -19,6 +20,73 @@ class DriverController {
             response.json(responseData);
         } catch (e) {
             responseData.message = e.message;
+            response.status(500);
+            response.json(responseData);
+        }
+    }
+
+    async getAccList(request, response) {
+        let responseData = {
+            status: true,
+            message: '',
+            data: []
+        }
+        const reqQuery = request.query;
+        const download = reqQuery.download || 0;
+        try {
+            responseData.data = await driverService.getAccList();
+            if (download) {
+                const filename = `AccList${Date.now()}.xlsx`;
+                response.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+                const workbook = new ExcelJS.Workbook();
+                const worksheet = workbook.addWorksheet('acc');
+                worksheet.addRow([
+                    "Code",
+                    "Description",
+                    "IsActive",
+                    "IsBillingItem",
+                    "IsPayItem",
+                    "IsHotkey",
+                    "IsCustomer",
+                    "tms_acc_name_id",
+                    "tms_acc_name_code",
+                    "tms_acc_name_name",
+                    "tms_acc_name_active",
+                    "tms_acc_name_billing",
+                    "tms_acc_name_hotkey",
+                    "tms_acc_name_customer"
+                ]);
+                for (const i in responseData.data) {
+                    const item = responseData.data[i];
+                    worksheet.addRow([
+                        item.Code,
+                        item.Description,
+                        item.IsActive,
+                        item.IsBillingItem,
+                        item.IsPayItem,
+                        item.IsHotkey,
+                        item.IsCustomer,
+                        item.tms_acc_name_id,
+                        item.tms_acc_name_code,
+                        item.tms_acc_name_name,
+                        item.tms_acc_name_active,
+                        item.tms_acc_name_billing,
+                        item.tms_acc_name_hotkey,
+                        item.tms_acc_name_customer
+                    ]);
+                }
+                console.log('Excel file has been generated.');
+                const buffer = await workbook.xlsx.writeBuffer();
+                // Send the buffer as the response
+                response.status(200);
+                response.send(buffer);
+            }else{
+                response.status(200);
+                response.json(responseData);
+            }
+        } catch (e) {
+            responseData.message = e.message;
+            responseData.status = false;
             response.status(500);
             response.json(responseData);
         }
