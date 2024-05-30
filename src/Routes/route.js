@@ -14,6 +14,8 @@ router.get('/api/logDetail', invoiceController.getLogDetail);
 router.get('/api/quoteList', invoiceController.getQuoteList);
 router.get('/api/compareInvoices', invoiceController.getCompareInvoices);
 router.get('/api/payment/detail', invoiceController.getCompareInvoicesDetail);
+router.post('/api/invoice/fail/add', invoiceController.addFailedInvoice);
+router.get('/api/invoice/fail/list', invoiceController.getFailedInvoice);
 
 router.get('/api/driver/list', driverController.getDriverList);
 router.get('/api/bnp/acc/list', driverController.getAccList);

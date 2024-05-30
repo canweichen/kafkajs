@@ -132,7 +132,6 @@ class DriverService {
                 newAccList.push(this.accList({}, item));
             }
         });
-        console.log(existsList);
         bnpAccList.forEach((item) => {
             if(!(existsList && existsList.hasOwnProperty(item.Code))) {
                 newAccList.push(this.accList(item, {}));

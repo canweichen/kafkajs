@@ -19,6 +19,14 @@ exports.batchCreate = (users, callback) => {
     });
 };
 
+exports.batchAdd = (table, data, callback) => {
+    const sql = 'INSERT INTO '+table+' SET ?';
+    connection.query(sql, data, (err, result) => {
+        if (err) throw err;
+        callback(result);
+    });
+};
+
 exports.getTableValue = (sql) => {
     return new Promise((resolve, reject) => {
         connection.query(sql,  (error, elements) => {

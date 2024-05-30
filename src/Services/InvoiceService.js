@@ -1,5 +1,6 @@
 const axios = require("axios");
 const HttpRequest = require("../Utils/HttpRequest");
+const crud = require('../Dao/crud');
 
 class InvoiceService
 {
@@ -238,6 +239,76 @@ class InvoiceService
             }
         }
         return bnpInvoice;
+    }
+
+    async addFailedInvoice(params){
+        const reason = params.reason;
+        const invoice_str = params.lists;
+        if(invoice_str === "" || invoice_str === null || invoice_str === undefined){
+            return false;
+        }
+        console.log(invoice_str);
+        let invoice_list = invoice_str.split("\n");
+        console.log(invoice_list)
+        if(invoice_list.length <= 0){
+            invoice_list = invoice_str.split(',');
+        }
+        if(invoice_list.length <= 0){
+            return false;
+        }
+        let invoices = [];
+        for (let i in invoice_list){
+            let child = {ar_id: 0, order_id: 0, invoice_num: '', reason: reason}
+            const invoice_str = invoice_list[i]
+            if(invoice_str === ""){
+                continue;
+            }
+            const sp_1 = invoice_str.split('(')
+            child.invoice_num = sp_1[0].trim()
+            const sp_2 = sp_1[1].split('||')
+            child.ar_id = sp_2[0].trim()
+            child.order_id = sp_2[1].replace(')', '').trim()
+            invoices.push(child)
+            crud.batchAdd('log_failed_invoice', child, () => {})
+        }
+        return invoices;
+    }
+
+    async getFailedInvoice(params){
+        const invoice = params.number || ''
+        const aid = params.aid || ''
+        const oid = params.oid || ''
+        const start = params.start || ''
+        const end = params.end || ''
+        const page = params.page || 1
+        const limit = params.limit || 20
+        const offset = (page - 1)*limit
+        let sql = "select * from log_failed_invoice where "
+        let countSql = "select count(*) as total from log_failed_invoice where "
+        let where = " 1 = 1 "
+        if(invoice !== ''){
+            where += " AND invoice_num = " + invoice;
+        }
+        if(aid !== ''){
+            where += " AND ar_id = " + aid
+        }
+        if(oid !== ''){
+            where += " AND order_id = " + oid
+        }
+        if(start !== '' && end !== ''){
+            where += " AND date(created_at) between " + start + " and " + end
+        }else if(start !== '' && end === ''){
+            where += " AND date(created_at) >= " + start
+        }else if(start === '' && end != ''){
+            where += " AND date(created_at) <= " + end
+        }
+        countSql += where
+        sql += where + ' order by id desc limit '+ offset + ',' + limit
+        console.log(countSql)
+        console.log(sql)
+        const countData = await crud.getTable(countSql)
+        const data = await crud.getTable(sql)
+        return {data, countData}
     }
 
 }

@@ -6,6 +6,50 @@ class InvoiceController
 {
 
     constructor(){}
+
+    async addFailedInvoice(request, response){
+        let responseData = {
+            status: true,
+            message: '',
+            data: []
+        }
+        try{
+            const params = request.body
+            const data = await invoiceService.addFailedInvoice(params)
+            responseData.data = data
+            response.status(200)
+            response.json(responseData)
+        }catch(e){
+            responseData.message = e.message
+            responseData.status = false
+            response.status(500)
+            response.json(responseData)
+        }
+    }
+
+    async getFailedInvoice(request, response){
+        let responseData = {
+            status: true,
+            message: '',
+            total: 0,
+            data: []
+        }
+        try{
+            const params = request.query
+            const {data, countData} = await invoiceService.getFailedInvoice(params)
+            responseData.total = countData[0].total
+            responseData.data = data
+            response.status(200)
+            response.json(responseData)
+        }catch(e){
+            responseData.message = e.message
+            responseData.status = false
+            response.status(500)
+            response.json(responseData)
+        }
+
+    }
+
     async getInvoiceLogList(request, response) {
         let responseData = {
             total: 0,

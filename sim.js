@@ -10,8 +10,8 @@ const cheerio = require('cheerio');
     '__EVENTTARGET': '',
     '__EVENTARGUMENT': '',
     '__VIEWSTATEENCRYPTED': '',
-    'ctl00$mainPageContent$umLoginControl$txtEmail': 'Jason.brown@unisco.com',
-    'ctl00_mainPageContent_umLoginControl_txtPassword': 'Unistrans2024!',
+    'ctl00$mainPageContent$umLoginControl$txtEmail': '',
+    'ctl00_mainPageContent_umLoginControl_txtPassword': '',
     'ctl00$mainPageContent$umLoginControl$btnLogin': 'Login',
   };
 
