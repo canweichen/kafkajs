@@ -12,7 +12,6 @@ class LocationService{
         const limit = params.limit || 10;
         const offset = (page - 1) * limit;
         const result = await crud.getTable("select * from log_location where location_status > -1 order by location_id desc limit "+offset+","+limit+";");
-        console.log(result);
         return [result, total];
     }
 

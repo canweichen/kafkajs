@@ -15,6 +15,7 @@ class InvoiceController
         }
         try{
             const params = request.body
+            console.log(params)
             const data = await invoiceService.addFailedInvoice(params)
             responseData.data = data
             response.status(200)
@@ -71,8 +72,6 @@ class InvoiceController
                 whereSql = " AND date(tms_ar_log_created_date) >= '" + start + "' "
             } else if (start === '' && end !== '') {
                 whereSql = " AND date(tms_ar_log_created_date) <= '" + end + "' "
-            } else {
-                whereSql = " AND date(tms_ar_log_created_date) = '" + new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate() + "' "
             }
             if (id > 0) {
                 whereSql += " AND tms_ar.tms_ar_id = " + id

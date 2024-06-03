@@ -3,6 +3,7 @@ const invoiceController = require('../Controller/InvoiceController');
 const driverController = require('../Controller/DriverController');
 const locationController = require('../Controller/LocationController');
 const loginController = require('../Controller/LoginController');
+const giraController = require('../Controller/GiraTicketController');
 const router = express.Router();
 
 router.post('/api/login', loginController.login);
@@ -28,5 +29,10 @@ router.get('/api/summary/list', driverController.getSummaryList);
 
 router.get('/api/sync/location', locationController.syncLocationToLocal);
 router.get('/api/location/list', locationController.getLocationList);
+
+router.post('/api/gira/ticket/add', giraController.add);
+router.get('/api/gira/ticket/list', giraController.list);
+router.post('/api/gira/ticket/edit', giraController.edit);
+router.get('/api/gira/ticket/delete', giraController.delete);
 
 module.exports = router
