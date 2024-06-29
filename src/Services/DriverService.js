@@ -80,16 +80,21 @@ class DriverService {
             whereSql += " AND tms_rpc_log_id = "+id;
         }
         if(start && end){
-            whereSql += " AND tms_rpc_log_request_when BETWEEN '"+start+" 00:00:00' AND '"+end+"' 23:59:59";
+            whereSql += " AND tms_rpc_log_request_when BETWEEN '"+start+" 00:00:00' AND '"+end+" 23:59:59'";
         }else if(start){
             whereSql += " AND tms_rpc_log_request_when >= '"+start+" 00:00:00'";
         }else if(end){
             whereSql += " AND tms_rpc_log_request_when <= '"+end+" 23:59:59'";
         }
         let sql = "SELECT * FROM "+dataTableName+" WHERE 1=1 "+whereSql;
+        let countSql = "SELECT COUNT(*) AS total FROM "+dataTableName+" WHERE 1=1 "+whereSql;
+        console.log(countSql);
+        countSql = encodeURIComponent(countSql);
+        const countData= await HttpRequest.get(countSql);
         console.log(sql);
         sql = encodeURIComponent(sql);
-        return await HttpRequest.get(sql, offset, limit);
+        const data = await HttpRequest.get(sql, offset, limit);
+        return {countData, data};
     }
 
     async recreateInvoice(ar_ids) {

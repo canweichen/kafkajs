@@ -71,6 +71,47 @@ class JiraTicketService
     async deleteJiraTicket(id){
 
     }
+
+    async createTechknowledge(params){
+        const id = params.id | 0;
+        const data = {
+            name: params.name,
+            type: params.type,
+            color: params.color,
+            content: params.content
+        }
+        if(id > 0){
+            const sql = "update log_techknowledge set name = ?, type = ?, color = ?, content = ? where id = ?;"
+            const res = await crud.updateTableLines(sql, [data.name, data.type, data.color, data.content, id])
+        }else{
+            crud.batchAdd('log_techknowledge', data, () => {})
+        }
+        return {status: true, message: "Add Successfully.", data: []}
+    }
+
+    async techknowledgeList(params){
+        const page = params.page | 1
+        const limit = params.limit | 20
+        const offset = (page - 1)*limit
+        let whereSql = " where 1 = 1"
+        if(params.type !== ''){
+            whereSql += ' AND type = "' + params.type + '"'
+        }
+        if(params.start !== '' && params.end != ''){
+            whereSql += " AND date(created_at) between '" + params.start + "' and '" + params.end + "'"
+        }else if(params.start !== '' && params.end === ''){
+            whereSql += " AND date(created_at) >= '" + params.start + "'"
+        }else if(params.start === '' && params.end !== ''){
+            whereSql += " AND date(created_at) 《= '" + params.end + "'"
+        }
+        const countSql = "select count(1) as total from log_techknowledge " + whereSql
+        const sql = "select * from log_techknowledge " + whereSql + " order by id desc limit " + offset + ',' + limit
+        console.log(countSql)
+        console.log(sql)
+        const countData = await crud.getTable(countSql)
+        const data = await crud.getTable(sql)
+        return {countData, data}
+    }
 }
 
 module.exports = new JiraTicketService()

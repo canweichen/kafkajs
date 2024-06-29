@@ -35,4 +35,10 @@ router.get('/api/gira/ticket/list', giraController.list);
 router.post('/api/gira/ticket/edit', giraController.edit);
 router.get('/api/gira/ticket/delete', giraController.delete);
 
+router.post('/api/tech/add', giraController.createTech);
+router.get('/api/tech/list', giraController.techList);
+
+router.get('/api/trip/export', locationController.exportToExcel);
+router.get('/api/trip/termina/list', locationController.getTripTerminalList);
+
 module.exports = router

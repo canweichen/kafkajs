@@ -115,11 +115,14 @@ class DriverController {
     async getTmsUserRpcLog(request, response) {
         let responseData = {
             message: '',
+            total: 0,
             data: []
         }
         try {
             const reqQuery = request.query;
-            responseData.data = await driverService.getTmsUserRpcLog(reqQuery);
+            const {countData, data} = await driverService.getTmsUserRpcLog(reqQuery);
+            responseData.total = countData[0].total;
+            responseData.data = data;
             response.status(200);
             response.json(responseData);
         } catch (e) {
